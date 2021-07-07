@@ -10,9 +10,8 @@ defmodule Advent2 do
   defp valid_password?([head | tail]) do
     {min, max} = parse_range(head)
 
-    [char | password] = tail
+    [char, password] = tail
 
-    password = hd(password)
     char = String.first(char)
 
     password
@@ -35,21 +34,20 @@ defmodule Advent2 do
   end
 
   # Parses the input when it is a single string
-  defp parse_input(input) do
+  defp parse_input(input) when is_bitstring(input) do
     input
     |> String.trim()
     |> String.split("\n")
     |> Enum.map(fn element -> String.split(element) end)
   end
 
+  defp parse_input(_), do: {:error, "Invalid input format"}
+
   # Parses the "x-y" part of the input
   defp parse_range(input) do
-    [head | tail] = String.split(input, "-")
+    [min, max] = String.split(input, "-")
 
-    max = String.to_integer(hd(tail))
-    min = String.to_integer(head)
-
-    {min, max}
+    {String.to_integer(min), String.to_integer(max)}
   end
 end
 
