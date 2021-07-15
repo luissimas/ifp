@@ -1,12 +1,12 @@
 defmodule Advent2 do
+  @spec solution(list() | bitstring()) :: integer()
   def solution(input) do
     input
     |> parse_input
-    |> Enum.map(&valid_password?/1)
-    |> Enum.filter(& &1)
-    |> Enum.count()
+    |> Enum.count(&valid_password?/1)
   end
 
+  @spec valid_password?(list()) :: boolean()
   defp valid_password?([head | tail]) do
     {min, max} = parse_range(head)
 
@@ -24,16 +24,23 @@ defmodule Advent2 do
     |> then(fn x -> in_range?(x, min, max) end)
   end
 
-  defp in_range?({_, count}, min, max) when count >= min and count <= max, do: true
+  @spec parse_range(bitstring()) :: tuple()
+  defp parse_range(input) do
+    [min, max] = String.split(input, "-")
+
+    {String.to_integer(min), String.to_integer(max)}
+  end
+
+  @spec in_range?(tuple(), integer(), integer()) :: boolean()
+  defp in_range?({_, x}, min, max) when x >= min and x <= max, do: true
   defp in_range?(_, _, _), do: false
 
-  # Parses the input when it is a list
+  @spec parse_input(list() | bitstring()) :: list()
   defp parse_input(input) when is_list(input) do
     input
     |> Enum.map(fn element -> String.split(element) end)
   end
 
-  # Parses the input when it is a single string
   defp parse_input(input) when is_bitstring(input) do
     input
     |> String.trim()
@@ -42,15 +49,9 @@ defmodule Advent2 do
   end
 
   defp parse_input(_), do: {:error, "Invalid input format"}
-
-  # Parses the "x-y" part of the input
-  defp parse_range(input) do
-    [min, max] = String.split(input, "-")
-
-    {String.to_integer(min), String.to_integer(max)}
-  end
 end
 
+# Testing with some methods (including the puzzle file)
 {:ok, input} = File.read("input_2.txt")
 
 my_input = ["1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"]
